@@ -1,0 +1,151 @@
+---
+title: "Data Visualisation"
+output: html_document
+http://r4ds.had.co.nz/data-visualisation.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("tidyverse")
+library(statsr)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+```
+
+## Data Visualisation
+This document covers the learnings from the Data Visualisation chapter of R for data science. http://r4ds.had.co.nz/data-visualisation.html
+
+We are given the car data, but we can visualise this with our regression work from Coursera.
+
+```{r cars}
+carinput <- lm(displ ~ hwy, data=mpg)
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+    geom_point() +
+    stat_smooth(method = "lm", se = FALSE)
+```
+
+The method given by the book is as follows:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+3.2.3 A graphing template
+
+```{r}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+Example:
+```{r}
+ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+
+Let’s hypothesize that the cars are hybrids. One way to test this hypothesis is to look at the class value for each car. The class variable of the mpg dataset classifies cars into groups such as compact, midsize, and SUV. If the outlying points are hybrids, they should be classified as compact cars or, perhaps, subcompact cars (keep in mind that this data was collected before hybrid trucks and SUVs became popular).
+
+You can add a third variable, like class, to a two dimensional scatterplot by mapping it to an aesthetic. An aesthetic is a visual property of the objects in your plot. Aesthetics include things like the size, the shape, or the color of your points. You can display a point (like the one below) in different ways by changing the values of its aesthetic properties.
+
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+we could have mapped class to the alpha aesthetic, which controls the transparency of the points, or the shape of the points.
+
+```{r}
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+```
+
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+What happened to the SUVs? ggplot2 will only use six shapes at a time. By default, additional groups will go unplotted when you use the shape aesthetic.
+
+
+You can also set the aesthetic properties of your geom manually. For example, we can make all of the points in our plot blue:
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+
+
+3.3.1 Exercises
+What’s gone wrong with this code? Why are the points not blue?
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+```
+
+We've passed colour as parameter alongside x and y, so it's passed as a label. We should close the bracket around x and y and then pass colour. Alternatively we could specify colour based on variable, like so:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = displ))
+```
+
+
+Which variables in mpg are categorical? Which variables are continuous? (Hint: type ?mpg to read the documentation for the dataset). How can you see this information when you run mpg?
+
+```{r}
+?mpg
+```
+
+We can see that:
+Manufacturer model
+Year
+Type of transmission
+drv
+Fuel type
+Class
+
+are all categorical variables
+
+Continuous variables are:
+displ, hwy, cty
+
+Map a continuous variable to color, size, and shape. How do these aesthetics behave differently for categorical vs. continuous variables?
+
+```{r}
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, shape = displ))
+
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, alpha = displ))
+
+
+```
+
+We can see that continuous variables can't be shaped.
+
+
+What happens if you map the same variable to multiple aesthetics?
+```{r}
+    geom_point(mapping = aes(x = displ, y = hwy, alpha = displ, size = displ))
+```
+
+We can see that the multiple aesthetics are layered on each other.
+
+What does the stroke aesthetic do? What shapes does it work with? (Hint: use ?geom_point)
+
+```{r}
+   geom_point(mapping = aes(x = displ, y = hwy, alpha = displ,  stroke = 5))
+```
+Stroke modifies the border around the point.
+
+What happens if you map an aesthetic to something other than a variable name, like aes(colour = displ < 5)?
+
+
+```{r - aes colour}
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
+```
+We can see here that the variables are colour coded based on whether they are less than or more than 5.
